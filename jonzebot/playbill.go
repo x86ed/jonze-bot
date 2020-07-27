@@ -120,21 +120,29 @@ func (t *Timecode) fromString(s string) {
 }
 
 func listVault() (out []string) {
-	out[0] += "*Movies:*\n"
+	out = append(out, "*Movies:*\n")
 	i := 1
 	for _, v := range vault {
 		chunk := i / 25
-		out[chunk] += fmt.Sprintf("%d. **%s**\n", i, v.Name)
+		if len(out)-1 < chunk {
+			out = append(out, fmt.Sprintf("%d. **%s**\n", i, v.Name))
+		} else {
+			out[chunk] += fmt.Sprintf("%d. **%s**\n", i, v.Name)
+		}
 		i++
 	}
 	return
 }
 
 func listPlaybill() (out []string) {
-	out[0] += "*Features:*\n"
+	out = append(out, "*Features:*\n")
 	for i, v := range playbill {
 		chunk := i / 25
-		out[chunk] += fmt.Sprintf("%d. **%s** & **%s**\n", i+1, v.Movie, v.SkateVid)
+		if len(out)-1 < chunk {
+			out = append(out, fmt.Sprintf("%d. **%s** & **%s**\n", i+1, v.Movie, v.SkateVid))
+		} else {
+			out[chunk] += fmt.Sprintf("%d. **%s** & **%s**\n", i+1, v.Movie, v.SkateVid)
+		}
 	}
 	return
 }
