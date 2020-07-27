@@ -233,10 +233,10 @@ func (c *Command) play(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if strings.Index(v.Name, p[0]) > -1 {
 			fURL := "Check it out...\n"
 			fURL += fmt.Sprintf("**%s**\n", v.Name)
-			qSep := "?"
+			qSep := "?t="
 			tc := ""
-			if strings.Index(fURL, qSep) > -1 {
-				qSep = "&"
+			if strings.Index(fURL, "?") > -1 {
+				qSep = "&t="
 			}
 			if v.Service == "vimeo" {
 				qSep = "#t="
