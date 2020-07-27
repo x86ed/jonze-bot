@@ -178,7 +178,10 @@ func (c *Command) nominate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	ms := t[0]
+	ms = strings.TrimSpace(ms)
 	sv := t[1]
+	sv = strings.TrimSpace(sv)
+	fmt.Println("urls ", ms, sv)
 	f := Feature{}
 	if isValidURL(ms) {
 		var new Video
@@ -192,8 +195,9 @@ func (c *Command) nominate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 		f.Movie = new.Name
 		f.MovieURL = new.URL
+	} else {
+		f.Movie = ms
 	}
-	f.Movie = ms
 
 	if isValidURL(sv) {
 		var new Video
@@ -207,8 +211,9 @@ func (c *Command) nominate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 		f.SkateVid = new.Name
 		f.SkateURL = new.URL
+	} else {
+		f.SkateVid = sv
 	}
-	f.SkateVid = sv
 	if !checkCombo(f.Movie, f.SkateVid) {
 		playbill = append(playbill, f)
 		archiveJSON(os.Getenv("PLAYBILL"), &playbill)
@@ -386,7 +391,7 @@ func (c *Command) sk8play(s *discordgo.Session, m *discordgo.MessageCreate) {
 	copy(playbill[i:], playbill[i+1:])
 	playbill[len(playbill)-1] = Feature{}
 	playbill = playbill[:len(playbill)-1]
-	s.ChannelMessageSend("715651111297613905", fmt.Sprintf("%s & %s is the next Sk8turday movie. Join us at %s in <@#712897888245514283> to watch., ", play.Movie, play.SkateVid, playtime.Format(l)))
+	s.ChannelMessageSend("715651111297613905", fmt.Sprintf("%s & %s is the next Sk8turday movie. Join us at %s in #Voice-chat to watch., ", play.Movie, play.SkateVid, playtime.Format(l)))
 }
 
 func (c *Command) sk8del(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -412,10 +417,12 @@ func (c *Command) sk8sched(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	playtime = t
-	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Join us at %s in <@#712897888245514283> to watch the next Sk8urday Movie., ", currentMovie.Start.Format(l)))
+	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Join us at %s in #Voice-chat to watch the next Sk8urday Movie., ", currentMovie.Start.Format(l)))
 }
 
 func (c *Command) sk8alert(s *discordgo.Session, m *discordgo.MessageCreate) {
 	l := "Jan 2, 2006 at 3:04pm (MST)"
-	s.ChannelMessageSend("715651111297613905", fmt.Sprintf("%s & %s is the next Sk8turday movie. Join us at %s in <@#712897888245514283> to watch., ", currentMovie.Feature.Movie, currentMovie.Feature.SkateVid, currentMovie.Start.Format(l)))
+	if len(currentMovie.Feature.Movie) > 0 {
+		s.ChannelMessageSend("715651111297613905", fmt.Sprintf("%s & %s is the next Sk8turday movie. Join us at %s in #Voice-chat to watch., ", currentMovie.Feature.Movie, currentMovie.Feature.SkateVid, currentMovie.Start.Format(l)))
+	}
 }

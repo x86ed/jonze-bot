@@ -33,6 +33,7 @@ func getTitle(s string) (string, error) {
 		panic("Fail to parse html")
 	}
 	t, e := traverse(doc)
+	t = strings.Replace(t, "*", "✷", -1)
 	t = strings.Replace(t, " on Vimeo", "", -1)
 	t = strings.Replace(t, " - YouTube", "", -1)
 	return t, e
@@ -58,6 +59,8 @@ func traverse(n *html.Node) (string, error) {
 }
 
 func isValidURL(toTest string) bool {
+	fmt.Println("URLString", toTest)
+	toTest = strings.TrimSpace(toTest)
 	_, err := url.ParseRequestURI(toTest)
 	if err != nil {
 		return false
