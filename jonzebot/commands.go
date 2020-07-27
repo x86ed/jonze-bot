@@ -220,7 +220,10 @@ func (c *Command) nominate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func (c *Command) play(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if len(c.Values) < 2 {
-		s.ChannelMessageSend(m.ChannelID, listVault())
+		vals := listVault()
+		for _, v := range vals {
+			s.ChannelMessageSend(m.ChannelID, v)
+		}
 		return
 	}
 	rt := strings.Join(c.Values[1:], " ")
@@ -289,7 +292,10 @@ func (c *Command) timestamp(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func (c *Command) vote(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if len(c.Values) < 2 {
-		s.ChannelMessageSend(m.ChannelID, listPlaybill())
+		movies := listPlaybill()
+		for _, v := range movies {
+			s.ChannelMessageSend(m.ChannelID, v)
+		}
 		return
 	}
 	i, e := strconv.Atoi(c.Values[1])
@@ -365,7 +371,7 @@ func (c *Command) sk8(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func (c *Command) sk8play(s *discordgo.Session, m *discordgo.MessageCreate) {
 	l := "Jan 2, 2006 at 3:04pm (MST)"
-	i, e := strconv.Atoi(c.Values[1])
+	i, e := strconv.Atoi(c.Values[2])
 	if e != nil {
 		s.ChannelMessageSend(m.ChannelID, "That's not a valid number.")
 		return
@@ -384,7 +390,7 @@ func (c *Command) sk8play(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func (c *Command) sk8del(s *discordgo.Session, m *discordgo.MessageCreate) {
-	i, e := strconv.Atoi(c.Values[1])
+	i, e := strconv.Atoi(c.Values[2])
 	if e != nil {
 		s.ChannelMessageSend(m.ChannelID, "That's not a valid number.")
 		return

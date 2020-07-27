@@ -119,20 +119,22 @@ func (t *Timecode) fromString(s string) {
 	t.Offset = val
 }
 
-func listVault() (out string) {
-	out += "*Movies:*\n"
+func listVault() (out []string) {
+	out[0] += "*Movies:*\n"
 	i := 1
 	for _, v := range vault {
-		out += fmt.Sprintf("%d. **%s**\n", i, v.Name)
+		chunk := i / 25
+		out[chunk] += fmt.Sprintf("%d. **%s**\n", i, v.Name)
 		i++
 	}
 	return
 }
 
-func listPlaybill() (out string) {
-	out += "*Features:*\n"
+func listPlaybill() (out []string) {
+	out[0] += "*Features:*\n"
 	for i, v := range playbill {
-		out += fmt.Sprintf("%d. **%s** & **%s**\n", i+1, v.Movie, v.SkateVid)
+		chunk := i / 25
+		out[chunk] += fmt.Sprintf("%d. **%s** & **%s**\n", i+1, v.Movie, v.SkateVid)
 	}
 	return
 }
