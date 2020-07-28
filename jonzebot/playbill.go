@@ -152,8 +152,7 @@ func searchVault(s string) (out []string) {
 			out = append(out, fmt.Sprintf("%d. **%s**\n", i+1, v.Name))
 			if len(v.TimeCodes) > 0 {
 				for i, v := range v.TimeCodes {
-					fmt.Println(len(out), chunk)
-					out[chunk] += fmt.Sprintf("\t%s - %s\n", i, v.toString())
+					out[chunk-1] += fmt.Sprintf("\t%s - %s\n", i, v.toString())
 				}
 			}
 		} else {
