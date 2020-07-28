@@ -53,6 +53,8 @@ var help string = "```yaml\n" +
 * !jonze play/!jonzeplay video name/timestamp - will play the video requested at the timestamp specified.
 * !jonze nominate/!jonzenom  feature film *&* skate video - nominate a feature film and skate video for the Sk8turday Matinee.
 * !jonze vote/!jonzevote (number) - Without a number list the nominees for the week. With a number vote for that entry.
+* !jonze list/!jonzelist  - list all movies in the vault.
+* !jonze search/!jonzesearch string - search for a value in the vault.
 
 * !jonze sk8/!sk8urday alert/play/schedule/delete int - movie party commands (video mod only)
 ` + "```"
@@ -70,6 +72,10 @@ var actionMap = map[string]string{
 	"!jonzevote":       "vote",
 	"!jonze add":       "add",
 	"!jonzeadd":        "add",
+	"!jonze list":      "list",
+	"!jonzelist":       "list",
+	"!jonze search":    "search",
+	"!jonzesearch":     "search",
 	"!sk8turday":       "sk8urday",
 	"!jonze sk8":       "sk8urday",
 }
@@ -97,6 +103,16 @@ var nominatec = Command{
 var votec = Command{
 	Trigger: []string{"!jonze vote", "!jonzevote"},
 	Action:  "vote",
+}
+
+var listc = Command{
+	Trigger: []string{"!jonze list", "!jonzelist"},
+	Action:  "list",
+}
+
+var searchc = Command{
+	Trigger: []string{"!jonze search", "!jonzesearch"},
+	Action:  "search",
 }
 
 var addc = Command{
@@ -137,6 +153,10 @@ func (c *Command) Process(s *discordgo.Session, m *discordgo.MessageCreate) {
 		c.play(s, m)
 	case "timestamp":
 		c.timestamp(s, m)
+	case "list":
+		c.list(s, m)
+	case "search":
+		c.search(s, m)
 	case "vote":
 		c.vote(s, m)
 	case "sk8urday":
@@ -238,7 +258,7 @@ func (c *Command) play(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	for _, v := range vault {
-		if strings.Index(v.Name, p[0]) > -1 {
+		if strings.Index(strings.ToLower(v.Name), strings.ToLower(p[0])) > -1 {
 			fURL := "Check it out...\n"
 			fURL += fmt.Sprintf("**%s**\n", v.Name)
 			qSep := "?t="
@@ -278,7 +298,7 @@ func (c *Command) timestamp(s *discordgo.Session, m *discordgo.MessageCreate) {
 	new.fromString(rts[1])
 	var key string
 	for _, v := range vault {
-		if strings.Index(v.Name, rts[0]) > -1 {
+		if strings.Index(strings.ToLower(v.Name), strings.ToLower(rts[0])) > -1 {
 			key = v.URL
 		}
 	}
@@ -425,4 +445,15 @@ func (c *Command) sk8alert(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if len(currentMovie.Feature.Movie) > 0 {
 		s.ChannelMessageSend("715651111297613905", fmt.Sprintf("%s & %s is the next Sk8turday movie. Join us at %s in #Voice-chat to watch., ", currentMovie.Feature.Movie, currentMovie.Feature.SkateVid, currentMovie.Start.Format(l)))
 	}
+}
+
+func (c *Command) search(s *discordgo.Session, m *discordgo.MessageCreate) {
+}
+
+func (c *Command) list(s *discordgo.Session, m *discordgo.MessageCreate) {
+	vals := listVault()
+	for _, v := range vals {
+		s.ChannelMessageSend(m.ChannelID, v)
+	}
+	return
 }

@@ -17,10 +17,15 @@ type Feature struct {
 }
 
 type features []Feature
+type movies []Video
 
 func (a features) Len() int           { return len(a) }
 func (a features) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a features) Less(i, j int) bool { return len(a[i].Votes) < len(a[j].Votes) }
+
+func (a movies) Len() int           { return len(a) }
+func (a movies) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a movies) Less(i, j int) bool { return strings.Compare(a[i].Name, a[j].Name) == -1 }
 
 func (f *Feature) addSkate(v Video) {
 	f.SkateVid = v.Name
@@ -121,15 +126,20 @@ func (t *Timecode) fromString(s string) {
 
 func listVault() (out []string) {
 	out = append(out, "*Movies:*\n")
-	i := 1
+	va := []Video{}
 	for _, v := range vault {
+		va = append(va, v)
+	}
+	sv := movies(va)
+	sort.Sort(sv)
+	ssv := []Video(sv)
+	for i, v := range ssv {
 		chunk := i / 25
 		if len(out)-1 < chunk {
-			out = append(out, fmt.Sprintf("%d. **%s**\n", i, v.Name))
+			out = append(out, fmt.Sprintf("%d. **%s**\n", i+1, v.Name))
 		} else {
-			out[chunk] += fmt.Sprintf("%d. **%s**\n", i, v.Name)
+			out[chunk] += fmt.Sprintf("%d. **%s**\n", i+1, v.Name)
 		}
-		i++
 	}
 	return
 }
