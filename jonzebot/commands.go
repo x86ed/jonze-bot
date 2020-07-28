@@ -130,6 +130,8 @@ var commands = []Command{
 	timestampc,
 	playc,
 	nominatec,
+	listc,
+	searchc,
 	votec,
 	addc,
 	sk8urdayc,
@@ -448,6 +450,15 @@ func (c *Command) sk8alert(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func (c *Command) search(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if len(c.Values) < 2 {
+		s.ChannelMessageSend(m.ChannelID, "Need something to find.")
+		return
+	}
+	rt := strings.Join(c.Values[1:], " ")
+	vals := searchVault(rt)
+	for _, v := range vals {
+		s.ChannelMessageSend(m.ChannelID, v)
+	}
 }
 
 func (c *Command) list(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -455,5 +466,4 @@ func (c *Command) list(s *discordgo.Session, m *discordgo.MessageCreate) {
 	for _, v := range vals {
 		s.ChannelMessageSend(m.ChannelID, v)
 	}
-	return
 }

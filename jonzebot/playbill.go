@@ -124,6 +124,49 @@ func (t *Timecode) fromString(s string) {
 	t.Offset = val
 }
 
+func inTS(tc map[string]Timecode, s string) (out bool) {
+	for i := range tc {
+		if strings.Index(i, s) > -1 {
+			out = true
+			return
+		}
+	}
+	return
+}
+
+func searchVault(s string) (out []string) {
+	out = append(out, "*Movies:*\n")
+	va := []Video{}
+	for _, v := range vault {
+		va = append(va, v)
+	}
+	sv := movies(va)
+	sort.Sort(sv)
+	ssv := []Video(sv)
+	for i, v := range ssv {
+		if strings.Index(v.Name, s) < 0 && !inTS(v.TimeCodes, s) {
+			continue
+		}
+		chunk := i / 25
+		if len(out)-1 < chunk {
+			out = append(out, fmt.Sprintf("%d. **%s**\n", i+1, v.Name))
+			if len(v.TimeCodes) > 0 {
+				for i, v := range v.TimeCodes {
+					out[chunk] += fmt.Sprintf("\t%s - %s\n", i, v.toString())
+				}
+			}
+		} else {
+			out[chunk] += fmt.Sprintf("%d. **%s**\n", i+1, v.Name)
+			if len(v.TimeCodes) > 0 {
+				for i, v := range v.TimeCodes {
+					out[chunk] += fmt.Sprintf("\t%s - %s\n", i, v.toString())
+				}
+			}
+		}
+	}
+	return
+}
+
 func listVault() (out []string) {
 	out = append(out, "*Movies:*\n")
 	va := []Video{}
